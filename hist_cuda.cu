@@ -16,7 +16,7 @@ __global__ void create_histogram(int *hist, int *img, int *num_rows, int *num_co
 	int j = blockIdx.y;
 	int thx = threadIdx.x;
 
-	if( img[i*200 j] < = img[(i - 1 + (thx / 3 ))*200 + j - 1 + (thx % 3)] ) {
+	if( img[i*num_cols j] < = img[(i - 1 + (thx / 3 ))*num_cols + j - 1 + (thx % 3)] ) {
 		smallMatrix[(thx / 3 )][(thx % 3)] = 0;
 	}
 	else{
