@@ -7,11 +7,9 @@ using namespace std;
 void create_histogram(int *hist, int **img, int num_rows, int num_cols)
 {
   int  smallMatrix[3][3];
-    int i = 1;
     int decimal = 0;
-    while ( i <= num_rows) {
-        int j = 1;
-        while ( j <= num_cols) {
+    for ( int i =1; i <= num_rows; i++) {
+        for ( int j = 1; j <= num_colsl; j++) {
             if (img[i][j] <= img[i - 1][j - 1]) {
                 smallMatrix[0][0] = 0;
                 //cout << img[i][j] << " " << endl;
@@ -70,11 +68,8 @@ void create_histogram(int *hist, int **img, int num_rows, int num_cols)
 
             hist[decimal]++;
             // cout <<  hist[decimal] << " " ;
-            j++;
         }
-        i++;
     }
-
 }
 double distance(int * a, int *b, int size)
 {
