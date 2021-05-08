@@ -191,15 +191,11 @@ int main()
 
                 for (int i = 0; i < (num_rows + 2); i++) { //initialize enhanced img matrix  0
                     for (int j = 0; j < (num_cols + 2); j++) {
-                        img[i][j] = 0;
-                    }
-                }
-                for (int i = 1; i <= num_rows ; i++) { //copy data from the image to enhanced img matrix
-                    for (int j = 1; j <= num_cols; j++) {
-                        img[i][j] = image[i - 1][j - 1];
-                    }
-                }
 
+                    	if(i==0 || j==0 || i == num_rows+1 || j == num_cols+1)  img[i][j] = 0;
+                    	else img[i][j] = image[i - 1][j - 1];
+                    }
+                }
                 create_histogram(training_set[w - 1][q - 1], img, num_rows, num_cols);
                 //deallocate images
                 dealloc_2d_matrix(image, num_rows, num_cols);
