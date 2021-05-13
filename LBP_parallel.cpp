@@ -189,6 +189,7 @@ int main()
 //omp_set_num_threads(6);
 #pragma omp parallel
     {
+#pragma omp for
     for (int i = 0; i < nrOfIds; i++) {
         training_set[i] = alloc_2d_matrix(nrOfPhotosPerId,histogramSize);
         }
@@ -294,8 +295,6 @@ int main()
         dealloc_2d_matrix(training_set[i], nrOfPhotosPerId, 256);
         }
     }
-    cout << "Sequential time: " << t+r << " ms" << endl;
-    cout << "Parallel time: " << (stop_s-start_s) *1000 << " ms"<< endl;
 
 return 0;
 }
