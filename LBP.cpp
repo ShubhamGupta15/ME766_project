@@ -7,9 +7,11 @@ using namespace std;
 void create_histogram(int *hist, int **img, int num_rows, int num_cols)
 {
   int  smallMatrix[3][3];
+    int i = 1;
     int decimal = 0;
-    for ( int i =1; i <= num_rows; i++) {
-        for ( int j = 1; j <= num_cols; j++) {
+    while ( i <= num_rows) {
+        int j = 1;
+        while ( j <= num_cols) {
             if (img[i][j] <= img[i - 1][j - 1]) {
                 smallMatrix[0][0] = 0;
                 //cout << img[i][j] << " " << endl;
@@ -68,8 +70,11 @@ void create_histogram(int *hist, int **img, int num_rows, int num_cols)
 
             hist[decimal]++;
             // cout <<  hist[decimal] << " " ;
+            j++;
         }
+        i++;
     }
+
 }
 double distance(int * a, int *b, int size)
 {
@@ -191,11 +196,15 @@ int main()
 
                 for (int i = 0; i < (num_rows + 2); i++) { //initialize enhanced img matrix  0
                     for (int j = 0; j < (num_cols + 2); j++) {
-
-                    	if(i==0 || j==0 || i == num_rows+1 || j == num_cols+1)  img[i][j] = 0;
-                    	else img[i][j] = image[i - 1][j - 1];
+                        img[i][j] = 0;
                     }
                 }
+                for (int i = 1; i <= num_rows ; i++) { //copy data from the image to enhanced img matrix
+                    for (int j = 1; j <= num_cols; j++) {
+                        img[i][j] = image[i - 1][j - 1];
+                    }
+                }
+
                 create_histogram(training_set[w - 1][q - 1], img, num_rows, num_cols);
                 //deallocate images
                 dealloc_2d_matrix(image, num_rows, num_cols);
