@@ -15,7 +15,8 @@ __global__ void create_histogram(int *hist, int *img, int *num_rows, int *num_co
 	int i = blockIdx.x;
 	int j = blockIdx.y;
 	int thx = threadIdx.x;
-
+	
+	
 	if( img[i*num_cols j] < = img[(i - 1 + (thx / 3 ))*num_cols + j - 1 + (thx % 3)] ) {
 		smallMatrix[(thx / 3 )][(thx % 3)] = 0;
 	}
@@ -126,10 +127,10 @@ int ** read_image_data(string file_name, int h, int w)
 }
 int main()
 {
-    int nrOfIds = 9;
-    int nrOfPhotosPerId = 5;
-    int num_rows = 150;
-    int num_cols = 200;
+    int nrOfIds = 34;
+    int nrOfPhotosPerId = 30;
+    int num_rows = 125;
+    int num_cols = 94;
     int histogramSize = 256;
     int start_s=clock();
     int *hist, *d_img, *d_num_rows, *d_num_cols;
