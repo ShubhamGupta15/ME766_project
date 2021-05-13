@@ -9,7 +9,7 @@ void create_histogram(int *hist, int **img, int num_rows, int num_cols)
   int  smallMatrix[3][3];
     int decimal = 0;
     for ( int i =1; i <= num_rows; i++) {
-        for ( int j = 1; j <= num_colsl; j++) {
+        for ( int j = 1; j <= num_cols; j++) {
             if (img[i][j] <= img[i - 1][j - 1]) {
                 smallMatrix[0][0] = 0;
                 //cout << img[i][j] << " " << endl;
