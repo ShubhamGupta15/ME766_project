@@ -10,9 +10,7 @@ void create_histogram(int *hist, int **img, int num_rows, int num_cols)
   int  smallMatrix[3][3];
     //int i = 1;
     int decimal = 0;
-#pragma omp parallel
-    {
-#pragma omp for
+
     for(int i = 1; i <= num_rows; i++)
     {
         for(int j = 1; j <= num_cols; j++)
@@ -78,7 +76,6 @@ void create_histogram(int *hist, int **img, int num_rows, int num_cols)
 
     }
             
-}
 }
 
 double distance(int * a, int *b, int size)

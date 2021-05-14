@@ -188,7 +188,8 @@ int main(int argc, char** argv)
 
 
     int nrOfIds = 34;
-    int nrOfPhotosPerId = 30;
+    int nrOfPhotosPerId = 12;
+    int nrOfPhotosPerId_test = 30;
     int num_rows = 125;
     int num_cols = 94;
     int histogramSize = 256;
@@ -277,77 +278,84 @@ int main(int argc, char** argv)
 
     }
 
+
+
+
+
+    int num_correct=0;
+
     //TESTING PART
-    string filenames;
-    filenames = "s" + to_string(27) + "_" + to_string(30) + ".txt";
-            //cout<<filename<<endl;
+    for (int w = 1; w <= myIds; w++) {
+        for (int q = 1; q <= nrOfPhotosPerId_test; q++) {
+            string filenames;
+            filenames = "s" + to_string(w-1+offset) + "_" + to_string(q) + ".txt";
+                    //cout<<filename<<endl;
 
 
-    int **image11 = read_pgm_file(filenames, num_rows, num_cols);
-    int **img11 = alloc_2d_matrix((num_rows + 2), (num_cols + 2)); //enhanced image matrix with 0 in the corners
+            int **image11 = read_pgm_file(filenames, num_rows, num_cols);
+            int **img11 = alloc_2d_matrix((num_rows + 2), (num_cols + 2)); //enhanced image matrix with 0 in the corners
 
-    for (int i = 0; i < (num_rows + 2); i++) { //initialize enhanced img matrix  0
-        for (int j = 0; j < (num_cols + 2); j++) {
-            img11[i][j] = 0;
+            for (int i = 0; i < (num_rows + 2); i++) { //initialize enhanced img matrix  0
+                for (int j = 0; j < (num_cols + 2); j++) {
+                    img11[i][j] = 0;
+                }
+            }
+            for (int i = 1; i <= num_rows ; i++) { //copy data from the image to enhanced img matrix
+                for (int j = 1; j <= num_cols; j++) {
+                    img11[i][j] = image11[i - 1][j - 1];
+                }
+            }
+
+            int *A = new int[256];
+            for(int i =0; i< 256; i++){
+                A[i] = 0;
+            }
+
+            create_histogram(A, img11, num_rows, num_cols);
+            // for(int i =0; i<256; i++){
+            //     cout<<A[i]<<endl;
+            // }
+
+            //deallocate images
+            dealloc_2d_matrix(image11, num_rows, num_cols);
+            dealloc_2d_matrix(img11, (num_rows + 2), (num_cols + 2));
+
+
+            int testResultId, closest=0;
+            double closestValue;
+            testResultId = find_closest(training_set,myIds,nrOfPhotosPerId,histogramSize,A, closestValue);
+            // cout<<"from process"<<myrank<<" "<< closestValue<< " ID: "<< testResultId<< " with offset "<< offset<<endl
+
+            if (testResultId == w)
+                num_correct++;
+            // if(myrank==MASTER+1)
+            // cout<<w<<"  =   "<<testResultId<<endl;
+            
         }
     }
-    for (int i = 1; i <= num_rows ; i++) { //copy data from the image to enhanced img matrix
-        for (int j = 1; j <= num_cols; j++) {
-            img11[i][j] = image11[i - 1][j - 1];
-        }
-    }
+    MPI_Barrier(MPI_COMM_WORLD);
 
-    int *A = new int[256];
-    for(int i =0; i< 256; i++){
-        A[i] = 0;
-    }
-
-    create_histogram(A, img11, num_rows, num_cols);
-    // for(int i =0; i<256; i++){
-    //     cout<<A[i]<<endl;
-    // }
-
-    //deallocate images
-    dealloc_2d_matrix(image11, num_rows, num_cols);
-    dealloc_2d_matrix(img11, (num_rows + 2), (num_cols + 2));
-
-
-    int testResultId, closest=0;
-    double closestValue;
-    testResultId = find_closest(training_set,myIds,nrOfPhotosPerId,histogramSize,A, closestValue);
-    // cout<<"from process"<<myrank<<" "<< closestValue<< " ID: "<< testResultId<< " with offset "<< offset<<endl;
-
-
-    int global_closestValue;
+    int total_correct;
 
     if(myrank == MASTER){
-        global_closestValue = closestValue;
-        closest = testResultId;
+        total_correct = num_correct;
         for( int pe = 0; pe<num_pes; pe++){
             if(pe != MASTER){
-                MPI_Recv(&testResultId, 1, MPI_INT, pe, pe,  MPI_COMM_WORLD, &status);
-                MPI_Recv(&closestValue, 1, MPI_DOUBLE, pe , 100+pe, MPI_COMM_WORLD, &status);
-                MPI_Recv(&offset, 1, MPI_INT, pe, 200+pe, MPI_COMM_WORLD, &status);
-                if(global_closestValue > closestValue){
-                    global_closestValue = closestValue;
-                    closest = testResultId + offset;
+                MPI_Recv(&num_correct, 1, MPI_INT, pe, pe, MPI_COMM_WORLD, &status);
+                total_correct += num_correct;
                 }
             }
         }
-    }
 
     else{
-        MPI_Send(&testResultId, 1, MPI_INT, MASTER, myrank, MPI_COMM_WORLD);
-        MPI_Send(&closestValue, 1, MPI_DOUBLE, MASTER, 100+myrank, MPI_COMM_WORLD);
-        MPI_Send(&offset, 1, MPI_INT, MASTER, 200+myrank, MPI_COMM_WORLD);
+        MPI_Send(&num_correct, 1, MPI_INT, MASTER, myrank, MPI_COMM_WORLD);
+        // cout<<num_correct<<endl;
     }
 
+    if(myrank==MASTER)
+        cout<<"Accuarcy = "<<float(total_correct)/(30*34)<<endl;
 
-    if(myrank == MASTER)
-    cout<<"The ID of person is: "<<closest<<endl;
-
-    MPI_Barrier(MPI_COMM_WORLD);
-    cout<<"Sucess!"<<endl;
+    // cout<<"Sucess!"<<endl;
     // delete [] A;
     // double stop_s=omp_get_wtime();
     clock_t t;

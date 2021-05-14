@@ -213,7 +213,7 @@ int main()
 
         //TESTING PART
         string filenames;
-        filenames = "s" + to_string(33) + "_" + to_string(30) + ".txt";
+        filenames = "s" + to_string(27) + "_" + to_string(30) + ".txt";
                 //cout<<filename<<endl;
 
 
